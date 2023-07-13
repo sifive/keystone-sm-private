@@ -1,11 +1,16 @@
 /* Default platform does nothing special here */
 #include "../../enclave.h"
+#include <sbi_utils/worldguard/worldguard.h>
+#include <sbi_utils/worldguard/fdt_worldguard.h>
 
 unsigned long platform_init_global_once(){
+  fdt_worldguard_init(true);
   return SBI_ERR_SM_ENCLAVE_SUCCESS;
 }
 
 unsigned long platform_init_global(){
+  fdt_worldguard_init(false);
+  wg_set_nonsecure();
   return SBI_ERR_SM_ENCLAVE_SUCCESS;
 }
 
@@ -18,14 +23,17 @@ void platform_destroy_enclave(struct enclave* enclave){
 }
 
 unsigned long platform_create_enclave(struct enclave* enclave){
+// update pmp protection range additionally used by enclave?
   return SBI_ERR_SM_ENCLAVE_SUCCESS;
 }
 
 void platform_switch_to_enclave(struct enclave* enclave){
+  wg_set_secure();
   return;
 }
 
 void platform_switch_from_enclave(struct enclave* enclave){
+  wg_set_nonsecure();
   return;
 }
 
