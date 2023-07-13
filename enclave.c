@@ -76,7 +76,7 @@ static inline void context_switch_to_enclave(struct sbi_trap_regs* regs,
   switch_vector_enclave();
 
   // set PMP
-  osm_pmp_set(PMP_NO_PERM);
+  //osm_pmp_set(PMP_NO_PERM);
   int memid;
   for(memid=0; memid < ENCLAVE_REGIONS_MAX; memid++) {
     if(enclaves[eid].regions[memid].type != REGION_INVALID) {
@@ -372,7 +372,7 @@ unsigned long create_enclave(unsigned long *eidptr, struct keystone_sbi_create c
     goto free_encl_idx;
 
   // create PMP region for shared memory
-  if(pmp_region_init_atomic(utbase, utsize, PMP_PRI_BOTTOM, &shared_region, 0))
+  if(pmp_region_init_atomic(0, -1UL, PMP_PRI_BOTTOM, &shared_region, 1))
     goto free_region;
 
   // set pmp registers for private region (not shared)
