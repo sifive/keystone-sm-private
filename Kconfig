@@ -1,0 +1,3 @@
+config KEYSTONE
+	bool "Keystone security demo support"
+	default y
