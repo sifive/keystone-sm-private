@@ -89,6 +89,7 @@ typedef int pmpreg_id;
 typedef int region_id;
 
 /* external functions */
+void pmp_reg_bitmap_init(void);
 void pmp_init();
 int pmp_region_init_atomic(uintptr_t start, uint64_t size, enum pmp_priority pri, region_id* rid, int allow_overlap);
 int pmp_region_init(uintptr_t start, uint64_t size, enum pmp_priority pri, region_id* rid, int allow_overlap);

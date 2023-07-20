@@ -130,6 +130,7 @@ void sm_init(bool cold_boot)
   if (cold_boot) {
     /* only the cold-booting hart will execute these */
     sbi_printf("[SM] Initializing ... hart [%lx]\n", csr_read(mhartid));
+    pmp_reg_bitmap_init();
 
     sbi_ecall_register_extension(&ecall_keystone_enclave);
 

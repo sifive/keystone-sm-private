@@ -14,6 +14,9 @@
 #include <sbi/riscv_locks.h>
 #include <sbi/riscv_atomic.h>
 
+u32 *opensbi_region_cnt;
+static int pmp_start;
+
 /* PMP global spin locks */
 static spinlock_t pmp_lock = SPIN_LOCK_INITIALIZER;
 
@@ -214,12 +217,18 @@ int pmp_set_global(int region_idx, uint8_t perm)
   return SBI_ERR_SM_PMP_SUCCESS;
 }
 
+void pmp_reg_bitmap_init(void)
+{
+  pmp_start = *opensbi_region_cnt;
+  reg_bitmap =  (1 << pmp_start) - 1;
+}
+
 void pmp_init()
 {
   uintptr_t pmpaddr = 0;
   uintptr_t pmpcfg = 0;
   int i;
-  for (i=0; i < PMP_N_REG; i++)
+  for (i=pmp_start; i < PMP_N_REG; i++)
   {
     switch(i) {
 #define X(n,g) case n: { PMP_SET(n, g, pmpaddr, pmpcfg); break; }
@@ -340,8 +349,7 @@ static int tor_region_init(uintptr_t start, uint64_t size, enum pmp_priority pri
       break;
     }
     case(PMP_PRI_TOP): {
-      sm_assert(start == 0);
-      reg_idx = 0;
+      reg_idx = pmp_start;
       if(TEST_BIT(reg_bitmap, reg_idx))
         PMP_ERROR(SBI_ERR_SM_PMP_REGION_MAX_REACHED, "PMP register unavailable");
       break;
@@ -396,7 +404,7 @@ static int napot_region_init(uintptr_t start, uint64_t size, enum pmp_priority p
       break;
     }
     case(PMP_PRI_TOP): {
-      reg_idx = 0;
+      reg_idx = pmp_start;
       if(TEST_BIT(reg_bitmap, reg_idx))
         PMP_ERROR(SBI_ERR_SM_PMP_REGION_MAX_REACHED, "PMP register unavailable");
       break;
