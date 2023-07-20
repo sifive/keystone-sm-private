@@ -226,10 +226,10 @@ void pmp_reg_bitmap_init(void)
 void pmp_init()
 {
   uintptr_t pmpaddr = 0;
-  uintptr_t pmpcfg = 0;
   int i;
   for (i=pmp_start; i < PMP_N_REG; i++)
   {
+    uintptr_t pmpcfg = 0;
     switch(i) {
 #define X(n,g) case n: { PMP_SET(n, g, pmpaddr, pmpcfg); break; }
       LIST_OF_PMP_REGS

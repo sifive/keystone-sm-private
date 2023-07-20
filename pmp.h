@@ -8,7 +8,7 @@
 #include "sm.h"
 #include <sbi/riscv_atomic.h>
 
-#define PMP_N_REG         8 //number of PMP registers
+#define PMP_N_REG         8  //number of PMP registers
 #define PMP_MAX_N_REGION  16 //maximum number of PMP regions
 
 #define SET_BIT(bitmap, n) (bitmap |= (0x1 << (n)))
@@ -40,7 +40,8 @@ enum pmp_priority {
 
 #define PMP_SET(n, g, addr, pmpc) \
 { uintptr_t oldcfg = csr_read(pmpcfg##g); \
-  pmpc |= (oldcfg & ~((uintptr_t)0xff << (uintptr_t)8*(n%PMP_PER_GROUP))); \
+  uintptr_t mask = ((uintptr_t)0xff << (uintptr_t)8*(n%PMP_PER_GROUP));\
+  pmpc = (oldcfg & ~mask) | (pmpc & mask); \
   asm volatile ("la t0, 1f\n\t" \
                 "csrrw t0, mtvec, t0\n\t" \
                 "csrw pmpaddr"#n", %0\n\t" \
