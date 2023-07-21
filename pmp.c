@@ -250,11 +250,6 @@ int pmp_set_keystone(int region_idx, uint8_t perm)
 
   pmpaddr = region_pmpaddr_val(region_idx);
 
-  //sbi_printf("pmp_set() [hart %d]: reg[%d], mode[%s], range[0x%lx-0x%lx], perm[0x%x]\r\n",
-  //       current_hartid(), reg_idx, (region_is_tor(region_idx) ? "TOR":"NAPOT"),
-  //       region_get_addr(region_idx), region_get_addr(region_idx) + region_get_size(region_idx), perm);
-  //sbi_printf("  pmp[%d] = pmpaddr: 0x%lx, pmpcfg: 0x%lx\r\n", reg_idx, pmpaddr, pmpcfg);
-
   int n=reg_idx;
 
   switch(n) {
@@ -310,6 +305,22 @@ int pmp_unset(int region_idx)
   }
 
   return SBI_ERR_SM_PMP_SUCCESS;
+}
+
+int pmp_set_keystone_dump(int region_idx, uint8_t perm, bool dump_setting)
+{
+  if(!is_pmp_region_valid(region_idx))
+    PMP_ERROR(SBI_ERR_SM_PMP_REGION_INVALID, "Invalid PMP region index");
+
+  pmpreg_id reg_idx = region_register_idx(region_idx);
+
+  if (dump_setting) {
+    sbi_printf("[SM] Enforcing PMP: reg[%d], mode[%s], range[0x%lx-0x%lx], perm[0x%x]\r\n",
+               reg_idx, (region_is_tor(region_idx) ? "TOR":"NAPOT"),
+               region_get_addr(region_idx), region_get_addr(region_idx) + region_get_size(region_idx), perm);
+  }
+
+  return pmp_set_keystone(region_idx, perm);
 }
 
 int pmp_region_init_atomic(uintptr_t start, uint64_t size, enum pmp_priority priority, region_id* rid, int allow_overlap)

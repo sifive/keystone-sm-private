@@ -168,8 +168,8 @@ void sm_init(bool cold_boot)
 
   /* below are executed by all harts */
   pmp_init();
-  pmp_set_keystone(sm_region_id, PMP_NO_PERM);
-  pmp_set_keystone(os_region_id, PMP_ALL_PERM);
+  pmp_set_keystone_dump(sm_region_id, PMP_NO_PERM, cold_boot);
+  pmp_set_keystone_dump(os_region_id, PMP_ALL_PERM, cold_boot);
 
   /* Fire platform specific global init */
   if (platform_init_global() != SBI_ERR_SM_ENCLAVE_SUCCESS) {
