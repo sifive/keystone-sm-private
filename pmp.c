@@ -14,7 +14,7 @@
 #include <sbi/riscv_locks.h>
 #include <sbi/riscv_atomic.h>
 
-u32 *opensbi_region_cnt;
+u32 opensbi_region_cnt = 0;
 static int pmp_start;
 
 /* PMP global spin locks */
@@ -219,7 +219,7 @@ int pmp_set_global(int region_idx, uint8_t perm)
 
 void pmp_reg_bitmap_init(void)
 {
-  pmp_start = *opensbi_region_cnt;
+  pmp_start = opensbi_region_cnt;
   reg_bitmap =  (1 << pmp_start) - 1;
 }
 
