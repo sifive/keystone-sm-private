@@ -9,9 +9,9 @@
 #include "pmp.h"
 #include "sm-sbi.h"
 #include <sbi/riscv_encoding.h>
+#include <sbi/sbi_keystone.h>
 
 #define SMM_BASE  0x80000000
-#define SMM_SIZE  0x200000
 
 /* 0-1999 are not used (deprecated) */
 #define FID_RANGE_DEPRECATED      1999
@@ -62,8 +62,6 @@
 #define SBI_ERR_SM_PMP_REGION_INVALID                  100024
 #define SBI_ERR_SM_PMP_REGION_OVERLAP                  100025
 #define SBI_ERR_SM_PMP_REGION_IMPOSSIBLE_TOR           100026
-
-void sm_init(bool cold_boot);
 
 /* platform specific functions */
 #define ATTESTATION_KEY_LENGTH  64
