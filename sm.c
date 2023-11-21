@@ -172,12 +172,13 @@ void sm_init(bool cold_boot)
   pmp_set_keystone_dump(sm_region_id, PMP_NO_PERM, cold_boot);
   pmp_set_keystone_dump(os_region_id, PMP_ALL_PERM, cold_boot);
 
+  if (platform_init_global() != SBI_ERR_SM_ENCLAVE_SUCCESS) {
+    sbi_printf("[SM] platform global init fatal error");
+    sbi_hart_hang();
+  }
+
   if (!(sifive_tile_check_pg_reboot() || sifive_smc_check_pg_reboot())) {
     /* Fire platform specific global init */
-    if (platform_init_global() != SBI_ERR_SM_ENCLAVE_SUCCESS) {
-      sbi_printf("[SM] platform global init fatal error");
-      sbi_hart_hang();
-    }
     sbi_printf("[SM] Keystone security monitor has been initialized!\n");
     sm_print_hash();
   }
