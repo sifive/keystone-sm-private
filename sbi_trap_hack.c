@@ -7,7 +7,7 @@
 #include <sbi/sbi_hart.h>
 #include <sbi/sbi_illegal_insn.h>
 #include <sbi/sbi_ipi.h>
-#include <sbi/sbi_misaligned_ldst.h>
+#include <sbi/sbi_trap_ldst.h>
 #include <sbi/sbi_timer.h>
 #include <sbi/sbi_trap.h>
 
@@ -117,17 +117,25 @@ void sbi_trap_handler_keystone_enclave(struct sbi_trap_regs *regs)
 		return;
 	}
 
+	/* Original trap_info */
+	trap.epc   = regs->mepc;
+	trap.cause = mcause;
+	trap.tval  = mtval;
+	trap.tval2 = mtval2;
+	trap.tinst = mtinst;
+	trap.gva   = sbi_regs_gva(regs);
+
 	switch (mcause) {
 	case CAUSE_ILLEGAL_INSTRUCTION:
 		rc  = sbi_illegal_insn_handler(mtval, regs);
 		msg = "illegal instruction handler failed";
 		break;
 	case CAUSE_MISALIGNED_LOAD:
-		rc = sbi_misaligned_load_handler(mtval, mtval2, mtinst, regs);
+		rc = sbi_misaligned_load_handler(regs, &trap);
 		msg = "misaligned load handler failed";
 		break;
 	case CAUSE_MISALIGNED_STORE:
-		rc  = sbi_misaligned_store_handler(mtval, mtval2, mtinst, regs);
+		rc  = sbi_misaligned_store_handler(regs, &trap);
 		msg = "misaligned store handler failed";
 		break;
 	case CAUSE_SUPERVISOR_ECALL:
@@ -137,12 +145,8 @@ void sbi_trap_handler_keystone_enclave(struct sbi_trap_regs *regs)
 		break;
 	default:
 		/* If the trap came from S or U mode, redirect it there */
-		trap.epc = regs->mepc;
-		trap.cause = mcause;
-		trap.tval = mtval;
-		trap.tval2 = mtval2;
-		trap.tinst = mtinst;
 		rc = sbi_trap_redirect(regs, &trap);
+		msg = "trap redirect failed";
 		break;
 	};
 
