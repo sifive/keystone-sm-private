@@ -45,6 +45,7 @@ static inline void context_switch_to_enclave(struct sbi_trap_regs* regs,
   swap_prev_state(&enclaves[eid].threads[0], regs, 1);
   swap_prev_mepc(&enclaves[eid].threads[0], regs, regs->mepc);
   swap_prev_mstatus(&enclaves[eid].threads[0], regs, regs->mstatus);
+  enclaves[eid].threads[0].prev_mideleg = csr_read(mideleg);
 
   uintptr_t interrupts = 0;
   csr_write(mideleg, interrupts);
@@ -102,10 +103,8 @@ static inline void context_switch_to_host(struct sbi_trap_regs *regs,
   }
   osm_pmp_set(PMP_ALL_PERM);
 
-  uintptr_t interrupts = MIP_SSIP | MIP_STIP | MIP_SEIP;
-  csr_write(mideleg, interrupts);
-
   /* restore host context */
+  csr_write(mideleg, enclaves[eid].threads[0].prev_mideleg);
   swap_prev_state(&enclaves[eid].threads[0], regs, return_on_resume);
   swap_prev_mepc(&enclaves[eid].threads[0], regs, regs->mepc);
   swap_prev_mstatus(&enclaves[eid].threads[0], regs, regs->mstatus);

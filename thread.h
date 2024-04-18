@@ -71,6 +71,7 @@ struct thread_state
   int prev_mpp;
   uintptr_t prev_mepc;
   uintptr_t prev_mstatus;
+  unsigned long prev_mideleg;
   struct csrs prev_csrs;
   struct ctx prev_state;
 };
