@@ -14,7 +14,9 @@
 #include <sbi/riscv_barrier.h>
 #include <sbi/sbi_console.h>
 #include <sbi/sbi_hart.h>
-#include <sbi_utils/reset/fdt_reset_sifive_susp.h>
+#include <sifive/sifive_pmc.h>
+#include <sifive/sifive_smc.h>
+#include <sifive/sifive_tmc.h>
 
 static int sm_init_done = 0;
 static int sm_region_id = 0, os_region_id = 0;
@@ -177,7 +179,8 @@ void sm_init(bool cold_boot)
     sbi_hart_hang();
   }
 
-  if (!(sifive_tile_check_pg_reboot() || sifive_smc_check_pg_reboot())) {
+  if (!(sifive_tmc_check_pg_wake() || sifive_smc_check_pg_wake() ||
+	sifive_pmc_check_pg_wake())) {
     /* Fire platform specific global init */
     sbi_printf("[SM] Keystone security monitor has been initialized!\n");
     sm_print_hash();
