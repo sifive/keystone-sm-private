@@ -315,9 +315,10 @@ int pmp_set_keystone_dump(int region_idx, uint8_t perm, bool dump_setting)
   pmpreg_id reg_idx = region_register_idx(region_idx);
 
   if (dump_setting) {
-    sbi_printf("[SM] Enforcing PMP: reg[%d], mode[%s], range[0x%lx-0x%lx], perm[0x%x]\r\n",
+    sbi_printf("[SM] Enforcing PMP: reg[%d], mode[%s], range[0x%lx-0x%llx], perm[0x%x]\r\n",
                reg_idx, (region_is_tor(region_idx) ? "TOR":"NAPOT"),
-               region_get_addr(region_idx), region_get_addr(region_idx) + region_get_size(region_idx), perm);
+               region_get_addr(region_idx),
+               (unsigned long long)(region_get_addr(region_idx) + region_get_size(region_idx)), perm);
   }
 
   return pmp_set_keystone(region_idx, perm);
