@@ -11,7 +11,11 @@
 #include <sbi/riscv_encoding.h>
 #include <sbi/sbi_keystone.h>
 
-#define SMM_BASE  0x80000000
+#ifdef FW_TEXT_START
+#define SMM_BASE  FW_TEXT_START
+#else
+ #define SMM_BASE  0x80000000
+#endif
 
 /* 0-1999 are not used (deprecated) */
 #define FID_RANGE_DEPRECATED      1999
