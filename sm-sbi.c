@@ -33,9 +33,11 @@ unsigned long sbi_sm_destroy_enclave(unsigned long eid)
   return ret;
 }
 
-unsigned long sbi_sm_run_enclave(struct sbi_trap_regs *regs, unsigned long eid)
+unsigned long sbi_sm_run_enclave(struct sbi_trap_regs *regs, unsigned long eid,
+                                 unsigned long secure_memory_addr)
 {
-  regs->a0 = run_enclave(regs, (unsigned int) eid);
+  run_enclave(regs, (unsigned int) eid);
+  regs->a0 = secure_memory_addr;
   regs->mepc += 4;
   sbi_trap_exit(regs);
   return 0;
